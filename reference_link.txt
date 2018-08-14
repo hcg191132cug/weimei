@@ -1,0 +1,2 @@
+http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html
+https://blog.csdn.net/orangleliu/article/details/18005571

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block nav-item %}
+{% include 'nav-item.html' %}
+{% endblock %}
+{% load static %}
+{% block css-link %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fileUpload.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#userInfo" role="tab" aria-controls="home" aria-selected="true">我的信息</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#fav" role="tab" aria-controls="profile" aria-selected="false">我的收藏</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="profile-tab" href="/forgetPw/" role="tab" aria-controls="profile" aria-selected="false">修改密码</a>
+      </li>
+    </ul>
+<div class="tab-content my-3" id="myTabContent">
+  <div class="tab-pane fade show active" id="userInfo" role="tabpanel" aria-labelledby="home-tab">
+
+    <div class="row">
+        <form class="form-group col-md-3 clearfix" id = 'img-up-form' method="post" action="/changeHead/">
+            <div class="text-center"><img class="img-fluid img-thumbnail js-img-show" src="{% if user_info.image %}{{ user_info.image.url }}{% else %}{% static 'images/default.jpg' %}{% endif %}" id="image-preview" width="150"></div>
+            <div class="text-center">
+                <input type="file" name="image" class="js-img-up" id="image-upload"/>
+                <label class="btn btn-success my-2" for="image-upload">更换头像</label>
+            </div>
+            {% csrf_token %}
+        </form>
+        <form id="user-info-form" class="col-md-9" action="/userModify/" method="post">
+            <div class="row my-2">
+            <label for="nickName" class="col-md-2 col-form-label">昵称</label>
+              <div class="col-md-5"><input type="text" id="nickName" class="form-control" name="nickName" value="{{ user_info.nick_name }}"></div>
+            </div>
+            <div class="row my-2">
+            <label for="birthday" class="col-md-2 col-form-label">生日</label>
+            <div class="col-md-5"><input type="date" id="birthday" name="birthday" value= "{{ user_info.birthday|date:'Y-m-d' }}"></div>
+            </div>
+            <div class="row my-2">
+            <label class="col-md-2 col-form-label">性别</label>
+              <div class="col-md-5">
+                <div class="custom-control-inline">
+                    <input type="radio" name="gender" value="male" {% if user_info.gender == 'male' %}checked{% endif %}>男<br></div>
+                  <div class="custom-control-inline">
+                    <input type="radio" name="gender" value="female" {% if user_info.gender == 'female' %}checked{% endif %}>女<br></div>
+              </div>
+          </div>
+            <div class="row my-2">
+            <label for="address" class="col-md-2 col-form-label">地址</label>
+            <div class="col-md-5">
+                <input type="text" id="address" class="form-control" name="address" value="{{ user_info.address }}"></div>
+            </div>
+        <div class="row my-1">
+            <div class="col-md-7 text-right"><button type="submit" class="btn btn-primary">保存</button><div id="info-res"></div></div>
+        </div>
+            {% csrf_token %}
+        </form>
+    </div>
+
+  </div>
+
+  <div class="tab-pane fade" id="fav" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="card-deck">
+        {% for fav in favs %}
+        <div class="card mx-1" style="max-width: 18rem;">
+            <a href="{% url 'clothing' fav.c_id fav.color %}" target="_blank"><img class="card-img-top" src="{{ fav.img.url }}"></a>
+            <div class="card-body text-center">
+              <h5 class="card-title">{{ fav.name }}-{{ fav.brand }}</h5>
+              <p class="card-text"><small class="text-muted">面料:{{ fav.fabric }}&nbsp;颜色:
+                  {% for c in fav.all_color %}{{ c }}&nbsp;{% endfor %}
+              </small></p>
+            <hr>
+            <button type="button" class="btn btn-danger" onclick="unfav({{ fav.c_id }},this)">取消收藏</button>
+            </div>
+      </div>
+        {% endfor %}
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block js-link %}
+<script src="{% static 'js/jquery.upload.js' %}"></script>
+<script>
+$('#img-up-form').ajaxForm();
+$('#user-info-form').ajaxForm({target: '#info-res',});
+
+$('#img-up-form').on('submit', function(e) {
+	e.preventDefault(); // prevent native submit
+	$(this).ajaxSubmit({
+        success:function (status) {return false}
+	})
+    });
+$('#user-info-form').on('submit', function(e) {
+	e.preventDefault(); // prevent native submit
+	$(this).ajaxSubmit({
+
+        success:function (status) {
+            if(status=='OK'){
+            $('#info-res').html('OK');
+            window.location.reload()
+            return false;}
+            else{
+            return false;
+            }}
+	})
+    });
+$('.js-img-up').uploadPreview({ Img: ".js-img-show", Width: 94, Height: 94 ,Callback:function(){
+        $('#img-up-form').submit();
+    }});
+function unfav(c_id,element) {
+    $.ajax({
+        url:'/userunfav/',
+        type:'POST',
+        data:{'c_id':c_id},
+        success:function (status) {
+            if(status == "success"){
+                element.parentNode.parentNode.remove();
+            }else{
+                element.html(status);
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

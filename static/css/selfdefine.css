@@ -1,0 +1,18 @@
+.sd-a{
+    font-size: 18px;
+    color: #d3d9df;
+    border-color: #bee5eb;
+}
+
+.sd-a:hover{
+    color: #000;
+    text-decoration:none;
+}
+
+.sd-p{
+    font-size: 18px;
+}
+.errorput input {
+    border-color: #f00;
+    box-shadow: 0 0 5px #aa0b0b;
+}

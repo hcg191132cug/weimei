@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block nav-item %}
+{% include 'nav-item.html' %}
+{% endblock %}
+{% load static %}
+{% load clothes_extras %}
+
+{% block css-link %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/slick/slick.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/slick/slick-theme.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/zoom.css' %}" />
+<style type="text/css">
+#retina{
+    background-image: url("{{ cur_color.colorImg.url }}");
+    cursor:url('{% static 'img/default/blank.cur' %}'),default;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container preview">
+	<dl class="row my-3">
+        <dt class="col-xl-4 col-md-6 col-sm-12">
+            <div class="mx-auto" style=" width: 300px;">
+			<div id="mid" style="height: 400px;">
+				<img src="{{ cur_color.colorImg.url|clothesReplaceBig:'mid' }}" class="d-block h-100 w-100"/>
+                <div id="retina"></div>
+			</div>
+			<div class="sm_container mx-auto my-2" data-slick='{"slidesToShow": 4, "slidesToScroll": 1}'>
+                {% for color in colors %}
+				<div><img style="width: 60px;height: 80px" src="{{ color.colorImg.url|clothesReplaceBig:'small' }}" class="mx-auto "/></div>
+				{% endfor %}
+			</div>
+            </div>
+        </dt>
+        <dd class="col-xl-8 col-md-6 col-sm-12">
+        <dl class="row">
+
+          <dt class="col-sm-3">品名</dt>
+          <dd class="col-sm-9">{{ clothing.name }}-{{ clothing.brand }}</dd>
+
+          <dt class="col-sm-3">面料</dt>
+          <dd class="col-sm-9">{{ clothing.fabric }}</dd>
+
+          <dt class="col-sm-3 text-truncate">袖型</dt>
+          <dd class="col-sm-9">{{ clothing.sleeve }}</dd>
+
+          <dt class="col-sm-3">花型</dt>
+          <dd class="col-sm-9">{% for flower in flowers %}{{ flower }}&nbsp;{% endfor %}</dd>
+
+          <dt class="col-sm-3 text-truncate">尺码</dt>
+          <dd class="col-sm-9">
+              {% for size in sizes %}
+              {{ size }}
+              {% endfor %}
+          </dd>
+
+          <dt class="col-sm-3 text-truncate">季节</dt>
+          <dd class="col-sm-9">
+          {% for cson in seasons %}
+              {{ cson }}
+              {% endfor %}
+          </dd>
+
+          <dt class="col-sm-3 text-truncate">颜色</dt>
+          <dd class="col-sm-9">
+          {% for c in colorsName %}
+              {{ c }}
+              {% endfor %}
+          </dd>
+        {% if request.user.is_authenticated %}
+          <dt class="col-sm-3 text-truncate">价格</dt>
+          <dd class="col-sm-9">{{ clothing.price }}</dd>
+            {% if ez %}
+                <dt class="col-sm-6 text-truncate text-right"><button type="button" id="res" class="btn btn-outline-success">已收藏</button><div class="d-inline-block" id="error"></div></dt>
+            {% else %}
+          <dt class="col-sm-6 text-truncate text-right"><button type="button" id="res" class="btn btn-info" onclick="fav()">收藏</button><div class="d-inline-block" id="error"></div></dt>
+            {% endif %}
+        {% endif %}
+        </dl>
+        </dd>
+    </dl>
+</div>
+{% endblock %}
+{% block js-link %}
+<script src="{% static 'js/zoom.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/slick.min.js' %}"></script>
+<script type="text/javascript">
+    $('.sm_container').slick();
+    function fav() {
+        $.ajax({
+            url:'/userfav/',
+            type:'POST',
+            data:{'c_id':{{clothing.id}},'color_id':{{ cur_color.id }}},
+            success:function (status) {
+                if(status == "success"){
+                    $('#res').html('已收藏');
+                }else{
+                    $('#error').html(status);
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css-link %}{% endblock %}
+<body style="background-color: ivory;">
+{% block content %}
+<div>
+  <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+    {% for obj in banner %}
+    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="{% if forloop.first %}active{% endif %}"></li>
+    {% endfor %}
+  </ol>
+  <div class="carousel-inner">
+      {% for obj in banner %}
+    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+      <a href="{{ obj.url }} " target="_blank"><img width="1400px" class="d-block w-100 {% if forloop.first %}active{% endif %}" src="{{ obj.image.url }}" alt="slide {{ obj.index }}"></a>
+    </div>
+    {% endfor %}
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">上一个</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">下一个</span>
+  </a>
+</div>
+</div>
+
+<div class="container my-4">
+    <hr>
+  <div class="row my-2">
+    <div class="col-xs-1 col-md-1 "></div>
+    <div class="col-xs-5 col-md-5 "><p class="my-auto sd-p ">最新款</p> </div>
+    <div class="col-xs-5 col-md-5  text-right"><a href="{% url "more" 'time' %}?season={{ cson }}" class="sd-a px-3 border rounded">更 多</a></div>
+    <div class="col-xs-1 col-md-1 "></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-1 col-md-1 my-2"></div>
+      <div class="col-xs-10 col-md-10 my-2 text-center card-deck">
+         {% for cls in newest_clothes %}
+          <div class="card mx-2 my-2">
+            <a href="{% url 'clothing' cls.c_id cls.colorImg.id %}" target="_blank"><img class="card-img-top rounded" src="{{ cls.colorImg.colorImg.url }}" alt="Card image cap"></a>
+             <div class="card-footer bg-transparent border-success">
+                 <p class="card-text">{% if request.user.is_authenticated %}价格:{{ cls.price }}{% endif %}</p>
+                 <p class="card-text">
+                     <small class="text-muted">&nbsp;颜色:
+                  {% for c in cls.colors %}{{ c }}&nbsp;{% endfor %}</small>
+                 </p>
+                 </div>
+         </div>
+        {% endfor %}
+      </div>
+    <div class="col-xs-1 col-md-1 my-2 "></div>
+  </div>
+    <hr>
+  <div class="row my-2">
+    <div class="col-xs-1 col-md-1 "></div>
+    <div class="col-xs-5 col-md-5 "><p class="my-auto sd-p">本季热销</p> </div>
+    <div class="col-xs-5 col-md-5  text-right"><a href="{% url "more" 'sold' %}?season={{ cson }}" class="sd-a px-3 border rounded">更 多</a></div>
+    <div class="col-xs-1 col-md-1 "></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-1 col-md-1 my-2"></div>
+      <div class="col-xs-10 col-md-10 my-2 text-center card-deck">
+         {% for cls in hotest_clothes %}
+          <div class="card mx-2 my-2">
+            <a href="{% url 'clothing' cls.c_id cls.colorImg.id %}" target="_blank"><img class="card-img-top rounded" src="{{ cls.colorImg.colorImg.url }}" alt="Card image cap"></a>
+             <div class="card-footer bg-transparent border-success"><p class="card-text">{% if request.user.is_authenticated %}{{ cls.price }}{% endif %}</p>
+                 <p class="card-text">
+                     <small class="text-muted">&nbsp颜色:
+                  {% for c in cls.colors %}{{ c }}&nbsp;{% endfor %}</small>
+                 </p></div>
+          </div>
+         {% endfor %}
+      </div>
+    <div class="col-xs-1 col-md-1 my-2 "></div>
+  </div>
+</div>
+{% endblock %}

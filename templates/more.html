@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css-link %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/slick/slick.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/slick/slick-theme.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<hr>
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-12 col-md-12 text-right">
+
+          <a class="btn btn-outline-success {% if sortby != 'sold' %}active{% endif %}" href="{% url 'more' 'time' %}?season={{ cson }}" role="button">
+            日期
+          </a>
+          <a class="btn btn-outline-success {% if sortby == 'sold' %}active{% endif %}" href="{% url 'more' 'sold' %}?season={{ cson }}" role="button">
+              人气
+          </a>
+
+    </div>
+    </div>
+    {%  for clothing in clothes %}
+    <div class="row mt-3">
+        <div class="col-6 col-md-2">
+            <img src="{{ clothing.firstImg.url }}" class="rounded img-thumbnail" width="160">
+        </div>
+        <div class="col-6 col-md-2">
+            <p class="mb-0"><a href="{% url 'clothing' clothing.c_id clothing.firstColor %}" target="_blank">品名:&nbsp;{{ clothing.brand }}</a></p>
+            <p class="mb-0">商品号:&nbsp;{{ clothing.c_name }}</p>
+            <p class="mb-0">面料:&nbsp;{{ clothing.fabric }}</p>
+            <p class="mb-0">花型:&nbsp;{{ clothing.flower }}&nbsp;</p>
+            <p class="mb-0">尺码:&nbsp;{{ clothing.size_min }}-{{ clothing.size_max }}</p>
+            {% if request.user.is_authenticated %}<p class="mb-0">价格:&nbsp;{{ clothing.price }}</p>{% endif %}
+        </div>
+        <div class="col-12 col-md-8" >
+          <div class="color_frame my-3">
+              {% for color in clothing.colors %}
+                <div class="mx-2"><a href="{% url 'clothing' clothing.c_id color.id %} " target="_blank"><img src="{{ color.colorImg.url }} " class="rounded img-thumbnail" width="160"></a></div>
+              {% endfor %}
+          </div>
+        </div>
+    </div>
+    <hr>
+    {% endfor %}
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        {% if clothes_paginator.has_previous %}
+            <li class="page-item"><a class="page-link" href="?season={{ cson }}&page={{ clothes_paginator.previous_page_number }}">上一页</a></li>
+            <li class="page-item"><a class="page-link" href="?season={{ cson }}&page={{ clothes_paginator.previous_page_number }}">{{ clothes_paginator.previous_page_number }}</a></li>
+        {% endif %}
+        <li class="page-item active"><a class="page-link" href="#">{{ clothes_paginator.number }}</a></li>
+        {% if clothes_paginator.has_next %}
+            <li class="page-item"><a class="page-link" href="?season={{ cson }}&page={{ clothes_paginator.next_page_number }}">{{ clothes_paginator.next_page_number }}</a></li>
+            <li class="page-item"><a class="page-link" href="?season={{ cson }}&page={{ clothes_paginator.next_page_number }}">下一页</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+</div>
+{% endblock %}
+
+{% block js-link %}
+<script type="text/javascript" src="{% static 'js/slick.min.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('.color_frame').slick({
+  infinite: true,
+  slidesToShow: 4,
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 2000,
+  centerMode: true,
+});
+});
+</script>
+{% endblock %}
