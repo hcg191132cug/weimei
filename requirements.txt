@@ -1,4 +1,4 @@
-aiohttp==3.0.9
+aiohttp==3.7.4
 aiohttp-jinja2==0.17.0
 aiohttpdemo-polls==0.0.1
 aiomysql==0.0.12
