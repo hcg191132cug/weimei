@@ -18,7 +18,7 @@ django-reversion==2.0.13
 et-xmlfile==1.0.1
 future==0.16.0
 get==0.0.39
-httplib2==0.11.3
+httplib2==0.19.0
 idna==2.6
 idna-ssl==1.0.1
 jdcal==1.4
